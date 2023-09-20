@@ -13,5 +13,4 @@
 source ~/miniconda3/etc/profile.d/conda.sh
 conda activate mp1
 OUT_DIR=/scratch/general/vast/u1468310/cs6957/assignment1/models
-mkdir -p ${OUT_DIR}
 python mp1.py --output_dir ${OUT_DIR} <other arguments>
