@@ -200,7 +200,7 @@ def main():
             "optim_param": best_perf_dict["optimizer"],
             "epoch": best_perf_dict["epoch"],
             "loss": best_perf_dict["loss"]
-        }, f"{MODELS_PATH}/best/lr_{lr}/")
+        }, f"{MODELS_PATH}/best/lr_{lr}")
 
         print(f"Dev Loss with learning rate {lr} is {best_perf_dict['loss']}")
         if best_loss[0] > best_perf_dict['loss']:
