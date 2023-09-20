@@ -4,7 +4,7 @@
 #SBATCH --ntasks-per-node=32
 #SBATCH --nodes=1
 #SBATCH --gres=gpu:1
-#SBATCH --time=3:30:00
+#SBATCH --time=8:30:00
 #SBATCH --mem=2GB
 #SBATCH --mail-user=u1468310@utah.edu
 #SBATCH --mail-type=FAIL,END
@@ -13,4 +13,4 @@
 source ~/miniconda3/etc/profile.d/conda.sh
 conda activate mp1
 OUT_DIR=/scratch/general/vast/u1468310/cs6957/assignment1/models
-python mp1.py --output_dir ${OUT_DIR} <other arguments>
+python mp1.py --output_dir ${OUT_DIR}
