@@ -4,10 +4,20 @@ from torch.utils.data import TensorDataset, DataLoader
 from tqdm import tqdm
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
+import argparse
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--output_dir', type=str, help='Directory where model checkpoints will be saved')
+args = parser.parse_args()
+output_dir = args.output_dir
+
+VOCAB_PATH = output_dir + r"/vocab.txt"
+DATA_PATH = output_dir + r"/data"
+MODELS_PATH = output_dir + r"/models"
+EMBEDDINGS_PATH = output_dir + r"/embeddings"
 
 def get_vocab():
-    with open('./vocab.txt', 'r', encoding='utf8') as vocab:
+    with open(VOCAB_PATH, 'r', encoding='utf8') as vocab:
         v0 = []
         v1 = []
         for line in vocab:
@@ -27,7 +37,7 @@ def create_dataset(path, files, C_SIZE):
     i_to_word = {i: word for i, word in enumerate(v1)}
     for k in range(1, files+1):
 
-        data = open(f'./data/{path}/{k}.txt', 'r', encoding='utf8').read().split()
+        data = open(f'{DATA_PATH}/{path}/{k}.txt', 'r', encoding='utf8').read().split()
 
         for i in range(data.__len__()):
             if data[i] not in v1:
@@ -190,7 +200,7 @@ def main():
             "optim_param": best_perf_dict["optimizer"],
             "epoch": best_perf_dict["epoch"],
             "loss": best_perf_dict["loss"]
-        }, f"./models/best/lr_{lr}/")
+        }, f"{MODELS_PATH}/best/lr_{lr}/")
 
         print(f"Dev Loss with learning rate {lr} is {best_perf_dict['loss']}")
         if best_loss[0] > best_perf_dict['loss']:
@@ -199,7 +209,7 @@ def main():
 
     # Making embeddings file
     optimal_lr = best_loss[1]
-    model_path = f"./models/best/lr_{optimal_lr}"
+    model_path = f"{MODELS_PATH}/best/lr_{optimal_lr}"
     checkpoint = torch.load(model_path)
     model.load_state_dict(checkpoint["model_param"])
     optimizer1 = torch.optim.Adam(model.parameters(), lr=optimal_lr)
@@ -207,7 +217,7 @@ def main():
     lin_weights = model.state_dict()['linear.weight'].tolist()
     emb_weights = model.state_dict()['embeddings.weight'].tolist()
 
-    with open('./embeddings/embed.txt', 'a', encoding='utf8') as embed:
+    with open(f'{EMBEDDINGS_PATH}/embed.txt', 'a', encoding='utf8') as embed:
 
         for i in range(v0.__len__()):
             word = i_2_word[i]
@@ -218,7 +228,7 @@ def main():
             embed.write(f"{word} {str1} \n")
 
     # Q-2)
-    file = open('./embeddings/embed.txt', 'r', encoding='utf8')
+    file = open(f'{EMBEDDINGS_PATH}/embed.txt', 'r', encoding='utf8')
     data = file.read()
     file.close()
 
