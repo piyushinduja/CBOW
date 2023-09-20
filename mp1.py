@@ -138,13 +138,13 @@ def main():
 
     # Making training and dev dataset and data loaders
 
-    main_data, word_2_i, i_2_word = create_dataset('train', 1, C_SIZE)
+    main_data, word_2_i, i_2_word = create_dataset('train', 20, C_SIZE)
     c_data = torch.tensor([main_data[i][0] for i in range(main_data.__len__())])
     t_data = torch.tensor([main_data[i][1] for i in range(main_data.__len__())])
     train_dataset = TensorDataset(c_data, t_data)
     train_dataloader = DataLoader(train_dataset, batch_size=64, shuffle=True)
 
-    dev_data, dev_w_2_i, dev_i_2_w = create_dataset('dev', 1, C_SIZE)
+    dev_data, dev_w_2_i, dev_i_2_w = create_dataset('dev', 5, C_SIZE)
     dev_c_data = torch.tensor([dev_data[i][0] for i in range(dev_data.__len__())])
     dev_t_data = torch.tensor([dev_data[i][1] for i in range(dev_data.__len__())])
     dev_dataset = TensorDataset(dev_c_data, dev_t_data)
@@ -199,7 +199,7 @@ def main():
 
             if best_perf_dict["loss"] > dev_loss:
                 best_perf_dict["epoch"] = i+1
-                best_perf_dict['loss'] = np.average(dev_losses)
+                best_perf_dict['loss'] = dev_loss
                 best_perf_dict["model"] = model.state_dict()
                 best_perf_dict["optimizer"] = optimizer.state_dict()
 
