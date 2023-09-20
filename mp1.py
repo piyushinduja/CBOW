@@ -83,6 +83,7 @@ class CBOWModel(nn.Module):
 
 
 def closer_pairs(w1, w2, w3, w4, vocab_dict):
+    q2 = open(f'{MODELS_PATH}/q2/q2.txt', 'a', encoding='utf8')
     print(f"[{w1}, {w2}] or [{w3}, {w4}]")
     v1 = vocab_dict[w1]
     v2 = vocab_dict[w2]
@@ -91,13 +92,19 @@ def closer_pairs(w1, w2, w3, w4, vocab_dict):
     sim1 = cosine_similarity([v1], [v2])
     sim2 = cosine_similarity([v3], [v4])
     print(f"Similarity of {w1} and {w2}: ", sim1)
+    q2.write(f"Similarity of {w1} and {w2}: {sim1}")
     print(f"Similarity of {w3} and {w4}: ", sim2)
+    q2.write(f"Similarity of {w3} and {w4}: {sim2}")
     if sim1 > sim2:
+        q2.write(f"Pair [{w1}, {w2}] is closer.")
         print(f"Pair [{w1}, {w2}] is closer.")
     elif sim2 > sim1:
+        q2.write(f"Pair [{w3}, {w4}] is closer.")
         print(f"Pair [{w3}, {w4}] is closer.")
     else:
+        q2.write("Both the pairs are equally closer.")
         print("Both the pairs are equally closer.")
+    q2.close()
 
 
 def analogous_word(w1, w2, w3, vocab_dict):
@@ -145,17 +152,18 @@ def main():
 
     model = CBOWModel(e_dim=EMBEDDING_SIZE, v_size=V_SIZE)
 
-    best_loss = [10000.000, 0]
+    best_loss = [100000.000, 0]
     for lr in LEARNING_RATES:
         print("Learning rate: ", lr)
 
         loss_func = nn.CrossEntropyLoss()
         optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
-        best_perf_dict = {"epoch": 0, "loss": 1000000, "model": {}, "optimizer": {}}
+        best_perf_dict = {"epoch": 0, "loss": 1000, "model": {}, "optimizer": {}}
 
         # Training loop
         for i in range(EPOCHS):
+            print("Epoch:", i+1)
 
             # Training loop
             train_losses = []
@@ -167,7 +175,7 @@ def main():
                 loss.backward()
                 optimizer.step()
                 train_losses.append(loss.item())
-            print(f'Epoch {i + 1}: Training Loss {np.average(train_losses)}')
+            print(f'Training Loss {np.average(train_losses)}')
 
             # Evaluation loop
             dev_losses = []
@@ -187,13 +195,19 @@ def main():
 
             dev_loss = np.average(dev_losses)
 
-            print(f'Epoch {i + 1}: Dev Loss {dev_loss}')
+            print(f'Dev Loss {dev_loss}')
 
-            if dev_loss > best_perf_dict["loss"]:
+            if best_perf_dict["loss"] > dev_loss:
                 best_perf_dict["epoch"] = i+1
-                best_perf_dict["loss"] = np.average(dev_losses)
+                best_perf_dict['loss'] = np.average(dev_losses)
                 best_perf_dict["model"] = model.state_dict()
                 best_perf_dict["optimizer"] = optimizer.state_dict()
+
+        print(best_perf_dict['loss'])
+        print(f"Dev Loss with learning rate {lr} is {best_perf_dict['loss']}")
+        if best_loss[0] > best_perf_dict['loss']:
+            best_loss[0] = best_perf_dict['loss']
+            best_loss[1] = lr
 
         torch.save({
             "model_param": best_perf_dict["model"],
@@ -202,11 +216,7 @@ def main():
             "loss": best_perf_dict["loss"]
         }, f"{MODELS_PATH}/best/lr_{lr}")
 
-        print(f"Dev Loss with learning rate {lr} is {best_perf_dict['loss']}")
-        if best_loss[0] > best_perf_dict['loss']:
-            best_loss[0] = best_perf_dict['loss']
-            best_loss[1] = lr
-
+    print(f"Optimal loss is: {best_loss[0]} at {best_loss[1]}")
     # Making embeddings file
     optimal_lr = best_loss[1]
     model_path = f"{MODELS_PATH}/best/lr_{optimal_lr}"
@@ -242,7 +252,9 @@ def main():
         list2.pop()
         vocab_dict[list2[0]] = [float(list2[j]) for j in range(1, len(list2))]
 
+    q2 = open(f'{MODELS_PATH}/q2/q2.txt', 'a', encoding='utf8')
     print("Q-2) a) Which pairs are closer? \n")
+    q2.write("Q-2) a) Which pairs are closer? \n")
     closer_pairs('cat', 'tiger', 'plane', 'human', vocab_dict)
     print('\n')
     closer_pairs('my', 'mine', 'happy', 'human', vocab_dict)
@@ -254,11 +266,17 @@ def main():
     closer_pairs('cat', 'racket', 'good', 'bad', vocab_dict)
     print('\n')
 
+    q2.write("Q-2) b) Analogies:\n")
     print("Q-2) b) Analogies:\n")
+    q2.write(f"1) king: queen, man: {analogous_word('king', 'queen', 'man', vocab_dict)}")
     print("1) king: queen, man:", analogous_word('king', 'queen', 'man', vocab_dict))
+    q2.write(f"2) king: queen, prince: {analogous_word('king', 'queen', 'prince', vocab_dict)}")
     print("2) king: queen, prince:", analogous_word('king', 'queen', 'prince', vocab_dict))
+    q2.write(f"3) king: man, queen: {analogous_word('king', 'man', 'queen', vocab_dict)}")
     print("3) king: man, queen:", analogous_word('king', 'man', 'queen', vocab_dict))
+    q2.write(f"4) woman: man, princess: {analogous_word('woman', 'man', 'princess', vocab_dict)}")
     print("4) woman: man, princess:", analogous_word('woman', 'man', 'princess', vocab_dict))
+    q2.write(f"5) prince: princess, man: {analogous_word('prince', 'princess', 'man', vocab_dict)}")
     print("5) prince: princess, man:", analogous_word('prince', 'princess', 'man', vocab_dict))
 
 
