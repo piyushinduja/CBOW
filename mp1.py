@@ -11,10 +11,10 @@ parser.add_argument('--output_dir', type=str, help='Directory where model checkp
 args = parser.parse_args()
 output_dir = args.output_dir
 
-VOCAB_PATH = output_dir + r"/vocab.txt"
-DATA_PATH = output_dir + r"/data"
-MODELS_PATH = output_dir + r"/models"
-EMBEDDINGS_PATH = output_dir + r"/embeddings"
+VOCAB_PATH = output_dir + r"/CBOW/vocab.txt"
+DATA_PATH = output_dir + r"/CBOW/data"
+MODELS_PATH = output_dir + r"/CBOW/models"
+EMBEDDINGS_PATH = output_dir + r"/CBOW/embeddings"
 
 def get_vocab():
     with open(VOCAB_PATH, 'r', encoding='utf8') as vocab:
