@@ -138,7 +138,7 @@ def main():
 
     # Making training and dev dataset and data loaders
 
-    main_data, word_2_i, i_2_word = create_dataset('train', 20, C_SIZE)
+    main_data, word_2_i, i_2_word = create_dataset('train', 30, C_SIZE)
     c_data = torch.tensor([main_data[i][0] for i in range(main_data.__len__())])
     t_data = torch.tensor([main_data[i][1] for i in range(main_data.__len__())])
     train_dataset = TensorDataset(c_data, t_data)
@@ -235,48 +235,6 @@ def main():
             for j in weights:
                 str1 = str1 + str(j) + " "
             embed.write(f"{word} {str1} \n")
-
-    # Q-2)
-    file = open(f'{EMBEDDINGS_PATH}/embed.txt', 'r', encoding='utf8')
-    data = file.read()
-    file.close()
-
-    list1 = data.split('\n')
-    list1.pop()
-    vocab_dict = {}
-    for i in range(len(list1)):
-        str1 = list1[i]
-        list2 = str1.split(' ')
-        list2.pop()
-        list2.pop()
-        vocab_dict[list2[0]] = [float(list2[j]) for j in range(1, len(list2))]
-
-    q2 = open(f'{MODELS_PATH}/q2/q2.txt', 'a', encoding='utf8')
-    print("Q-2) a) Which pairs are closer? \n")
-    q2.write("Q-2) a) Which pairs are closer? \n")
-    closer_pairs('cat', 'tiger', 'plane', 'human', vocab_dict)
-    print('\n')
-    closer_pairs('my', 'mine', 'happy', 'human', vocab_dict)
-    print('\n')
-    closer_pairs('happy', 'cat', 'king', 'princess', vocab_dict)
-    print('\n')
-    closer_pairs('ball', 'racket', 'good', 'ugly', vocab_dict)
-    print('\n')
-    closer_pairs('cat', 'racket', 'good', 'bad', vocab_dict)
-    print('\n')
-
-    q2.write("Q-2) b) Analogies:\n")
-    print("Q-2) b) Analogies:\n")
-    q2.write(f"1) king: queen, man: {analogous_word('king', 'queen', 'man', vocab_dict)}")
-    print("1) king: queen, man:", analogous_word('king', 'queen', 'man', vocab_dict))
-    q2.write(f"2) king: queen, prince: {analogous_word('king', 'queen', 'prince', vocab_dict)}")
-    print("2) king: queen, prince:", analogous_word('king', 'queen', 'prince', vocab_dict))
-    q2.write(f"3) king: man, queen: {analogous_word('king', 'man', 'queen', vocab_dict)}")
-    print("3) king: man, queen:", analogous_word('king', 'man', 'queen', vocab_dict))
-    q2.write(f"4) woman: man, princess: {analogous_word('woman', 'man', 'princess', vocab_dict)}")
-    print("4) woman: man, princess:", analogous_word('woman', 'man', 'princess', vocab_dict))
-    q2.write(f"5) prince: princess, man: {analogous_word('prince', 'princess', 'man', vocab_dict)}")
-    print("5) prince: princess, man:", analogous_word('prince', 'princess', 'man', vocab_dict))
 
 
 if __name__ == "__main__":
